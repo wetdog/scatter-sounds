@@ -17,7 +17,7 @@ for (let i=0; i<nPoints; i++){
 // **************** Web audio *****************
 const context = new AudioContext();
 let bufferData = null;
-const audioUrl = "/sounds/37.wav";
+const audioUrl = "37.wav";
 
 function playTone(freq,gain){
     // create  nodes
