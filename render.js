@@ -1,23 +1,41 @@
 
 var containerElement = document.getElementById('container');
 // Create random point vector
-
-var randPoints = [];
-var nPoints = 500;
-
-for (let i=0; i<nPoints; i++){
-    var tmpPoint = [0,0,0];
-    for (let j=0; j<3; j++){
-        tmpPoint[j] = Math.random()
+function createRandomArray(nPoints){
+    let randPoints = [];
+    for (let i=0; i<nPoints; i++){
+        let tmpPoint = [0,0,0];
+        for (let j=0; j<3; j++){
+            tmpPoint[j] = Math.random()
+        }
+        //console.log(tmpPoint)
+        randPoints.push(tmpPoint)
     }
-    //console.log(tmpPoint)
-    randPoints.push(tmpPoint)
+    return randPoints;
 }
+
+let dataArray = createRandomArray(1000);
+console.log(dataArray.length);
+
+// Load json File projections
+
+const dataUrl = "./preprocess/projections.json"
+let dataArray2;
+
+fetch(dataUrl)
+    .then(function(resp) {
+        return resp.json(); 
+    })
+    .then(function(data){        
+        dataArray2 = data;
+        console.log(dataArray2.projections);
+    }) 
 
 // **************** Web audio *****************
 const context = new AudioContext();
 let bufferData = null;
 const audioUrl = "37.wav";
+
 
 function playTone(freq,gain){
     // create  nodes
@@ -46,6 +64,7 @@ async function loadSoundfetch(audioContext, url){
         console.log('Vector Length: ' + audioBuffer.length);
         console.log('Sample rate: ' + audioBuffer.sampleRate);
         console.log('Number of channels: ' + audioBuffer.numberOfChannels);
+        // Debug message
         document.getElementById('msg').textContent ='Duration: ' + audioBuffer.duration
          + ' Vector Length: ' + audioBuffer.length + ' Sample rate: ' 
          + audioBuffer.sampleRate + ' Number of channels: ' + audioBuffer.numberOfChannels;
@@ -68,18 +87,22 @@ function playSounds(buffer){
 
 loadSoundfetch(context,audioUrl);
 
-const dataset = new ScatterGL.Dataset(randPoints);
-const scatterGL = new ScatterGL(containerElement,
-//        {
-//            onClick: (point) => playTone(400 + Math.random()*1500,0.8),
+function renderDataset(){
+    const dataset = new ScatterGL.Dataset(dataArray2.projections);
+    const scatterGL = new ScatterGL(containerElement,
+    //        {
+    //            onClick: (point) => playTone(400 + Math.random()*1500,0.8),
 
-//        }
-        {
-            onHover: (point) => playSounds(bufferData)
-        }
-    );
+    //        }
+            {
+                onHover: (point) => playSounds(bufferData)
+            }
+        );
 
-scatterGL.render(dataset);
+    scatterGL.render(dataset);
+    }
+
+setTimeout(renderDataset,3000)
 // Add in a resize observer for automatic window resize.
 window.addEventListener('resize', () => {
     scatterGL.resize();
