@@ -10,7 +10,7 @@ import json
 
 # load audio 
 
-audio_file = "../long_audio.wav"
+audio_file = "../long_audio_2.wav"
 assert os.path.isfile(audio_file), "Invalid audio path"
 
 # Load models from TF-hub
@@ -32,7 +32,8 @@ def get_random_signal(n_seconds,sample_rate):
     return np.random.rand(sample_rate*n_seconds)
 
 sample_rate = 16000
-x =  get_random_signal(n_seconds=40,sample_rate=sample_rate)
+#x =  get_random_signal(n_seconds=40,sample_rate=sample_rate)
+x = load_audio_16khz(audio_file)
 duration = x.shape[0] / sample_rate
 
 waveform = tf.Variable(x,dtype=tf.float32)
@@ -50,7 +51,13 @@ print(f"Embedding duration: {duration / embeddings.shape[0]}")
 tsne = TSNE(n_components=3)
 projected_embeddings = tsne.fit_transform(embeddings)
 
+norm_projected_embeddings = projected_embeddings / projected_embeddings.max()
+
+print(projected_embeddings.max())
+
 print(f"Projected embeddings shape {projected_embeddings.shape}")
 
 with open("projections.json","w") as json_file:
-    json.dump({"projections":list(projected_embeddings)},json_file)
+    json.dump({"projections":norm_projected_embeddings.tolist()},json_file)
+
+
