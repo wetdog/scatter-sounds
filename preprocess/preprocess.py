@@ -6,11 +6,12 @@ import resampy
 import os
 from sklearn.manifold import TSNE
 import json 
+import umap
 
 
 # load audio 
 
-audio_file = "../long_audio_2.wav"
+audio_file = "../long_audio.wav"
 assert os.path.isfile(audio_file), "Invalid audio path"
 
 # Load models from TF-hub
@@ -19,7 +20,7 @@ yamnet = hub.load('https://tfhub.dev/google/yamnet/1')
 def load_audio_16khz(audio_file):
     x, sample_rate = sf.read(audio_file)
     # check for mono file
-    if x.shape[1] > 1:
+    if len(x.shape) > 1:
         x = x.mean(axis=1)
     # check sample rate of audio
     if sample_rate != 16000:
@@ -47,9 +48,18 @@ print(f"embedding shape: {embeddings.shape}")
 print(f"Embedding duration: {duration / embeddings.shape[0]}")
 
 # dimensionality reduction 
+def reduce_dim(method="UMAP"):
+    if method == "TSNE":
+        tsne_reducer = TSNE(n_components=3)
+        projected_embeddings = tsne_reducer.fit_transform(embeddings)
+        return projected_embeddings
 
-tsne = TSNE(n_components=3)
-projected_embeddings = tsne.fit_transform(embeddings)
+    elif method =="UMAP":
+        umap_reducer = umap.UMAP(n_components=3)
+        projected_embeddings = umap_reducer.fit_transform(embeddings)
+        return projected_embeddings
+
+projected_embeddings = reduce_dim(method="UMAP")
 
 norm_projected_embeddings = projected_embeddings / projected_embeddings.max()
 
@@ -58,6 +68,6 @@ print(projected_embeddings.max())
 print(f"Projected embeddings shape {projected_embeddings.shape}")
 
 with open("projections.json","w") as json_file:
-    json.dump({"projections":norm_projected_embeddings.tolist()},json_file)
+    json.dump({"projections":projected_embeddings.tolist()},json_file)
 
 
