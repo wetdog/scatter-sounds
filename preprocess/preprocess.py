@@ -70,8 +70,10 @@ print(f"Projected embeddings shape {projected_embeddings.shape}")
 
 start_samples = [int(i*hop_size*sample_rate) for i in range(n_windows)]
 end_samples = [int((i*hop_size + window_size)*sample_rate) for i in range(n_windows)]
+ids = [i for i in range(n_windows)]
 
-json_dict = {"start_sample": start_samples,
+json_dict = {"idx":ids,
+            "start_sample": start_samples,
             "end_sample":end_samples,
             "projections":projected_embeddings.tolist()}
 
