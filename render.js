@@ -28,7 +28,7 @@ fetch(dataUrl)
     })
     .then(function(data){        
         dataArray2 = data;
-        console.log(dataArray2.projections);
+        console.log(dataArray2);
     }) 
 
 // **************** Web audio *****************
@@ -78,7 +78,8 @@ function playSounds(buffer){
     const source = new AudioBufferSourceNode(context);
     const amp = new GainNode(context);
     source.connect(amp).connect(context.destination);
-
+    console.log(buffer)
+    console.log(buffer.duration)
     source.buffer = buffer;
     source.start();
     source.stop(now + buffer.duration);
