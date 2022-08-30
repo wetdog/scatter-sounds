@@ -7,35 +7,25 @@ import os
 from sklearn.manifold import TSNE
 import json 
 import umap
+from PIL import Image
+from matplotlib import cm
 
+from utils import *
 
 # load audio 
 audio_file = "../long_audio.wav"
+audio_name = os.path.basename(audio_file).split(".")[0]
 assert os.path.isfile(audio_file), "Invalid audio path"
 
 # Load models from TF-hub
 yamnet = hub.load('https://tfhub.dev/google/yamnet/1')
 
-def load_audio_16khz(audio_file):
-    x, sample_rate = sf.read(audio_file)
-    # check for mono file
-    if len(x.shape) > 1:
-        x = x.mean(axis=1)
-    # check sample rate of audio
-    if sample_rate != 16000:
-        x = resampy.resample(x,sample_rate,16000)
-        sample_rate = 16000
-    return x
-
-#waveform = tf.Variable(x,dtype=tf.float32)
-def get_random_signal(n_seconds,sample_rate):
-    return np.random.rand(sample_rate*n_seconds)
-
 sample_rate = 16000
 hop_size = 0.48
 window_size = 0.96
-x =  get_random_signal(n_seconds=4,sample_rate=sample_rate)
-#x = load_audio_16khz(audio_file)
+
+#x =  get_random_signal(n_seconds=4,sample_rate=sample_rate)
+x = load_audio_16khz(audio_file)
 duration = x.shape[0] / sample_rate
 waveform = tf.Variable(x,dtype=tf.float32)
 print(f"Audio shape: {waveform.shape}")
@@ -49,23 +39,11 @@ print(f"embedding shape: {embeddings.shape}")
 print(f"Embedding duration: {duration / embeddings.shape[0]}")
 
 # dimensionality reduction 
-def reduce_dim(method="UMAP"):
-    if method == "TSNE":
-        tsne_reducer = TSNE(n_components=3)
-        projected_embeddings = tsne_reducer.fit_transform(embeddings)
-        return projected_embeddings
-
-    elif method =="UMAP":
-        umap_reducer = umap.UMAP(n_components=3)
-        projected_embeddings = umap_reducer.fit_transform(embeddings)
-        return projected_embeddings
 
 projected_embeddings = reduce_dim(method="UMAP")
-
 norm_projected_embeddings = projected_embeddings / projected_embeddings.max()
 
 print(projected_embeddings.max())
-
 print(f"Projected embeddings shape {projected_embeddings.shape}")
 
 start_samples = [int(i*hop_size*sample_rate) for i in range(n_windows)]
@@ -81,3 +59,36 @@ with open("projections.json","w") as json_file:
     json.dump(json_dict,json_file)
 
 
+## spritesheet
+
+# create sprite image
+if type(spectrograms).__name__ != 'ndarray':
+  spectrograms = spectrograms.numpy()
+
+if len(spectrograms.shape) > 2:
+  spectrograms = np.squeeze(spectrograms,axis=0)
+
+img_dim = 150
+step = int(np.floor(spectrograms.shape[0] / embeddings.shape[0]))
+spectrograms = spectrograms[:,::-1]
+spectrograms_scaled = spectrograms + np.abs(np.min(spectrograms))
+spectrograms_scaled = spectrograms_scaled / spectrograms_scaled.max()
+
+images = [Image.fromarray((np.uint8(cm.viridis(spectrograms_scaled[i:i+step,:].T)*255))).resize(size=(img_dim,img_dim)) for i in range(0,spectrograms_scaled.shape[0],step)]
+
+image_width, image_height = images[0].size
+one_square_size = int(np.ceil(np.sqrt(len(images))))
+master_width = (image_width * one_square_size) 
+master_height = image_height * one_square_size
+spriteimage = Image.new(
+    mode='RGBA',
+    size=(master_width, master_height),
+    color=(0,0,0,0))  # fully transparent
+for count, image in enumerate(images):
+    div, mod = divmod(count,one_square_size)
+    h_loc = image_width*div
+    w_loc = image_width*mod    
+    spriteimage.paste(image,(w_loc,h_loc))
+
+sprite_file = f"{audio_name}_sprite.jpg"
+spriteimage.convert("RGB").save(sprite_file, transparency=0)
