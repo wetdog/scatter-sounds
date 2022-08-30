@@ -1,3 +1,4 @@
 *.wav
 preprocess/*.json
 .DS_Store
+*.jpg
