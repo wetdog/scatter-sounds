@@ -3,8 +3,6 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import os
 import json 
-from PIL import Image
-from matplotlib import cm
 import argparse
 
 from utils import *
@@ -64,34 +62,7 @@ with open(os.path.join(output_path,"projections.json"),"w") as json_file:
 
 ## spritesheet
 # create sprite image
-if type(spectrograms).__name__ != 'ndarray':
-  spectrograms = spectrograms.numpy()
-
-if len(spectrograms.shape) > 2:
-  spectrograms = np.squeeze(spectrograms,axis=0)
-
-img_dim = 50
-step = int(np.floor(spectrograms.shape[0] / embeddings.shape[0]))
-spectrograms = spectrograms[:,::-1]
-spectrograms_scaled = spectrograms + np.abs(np.min(spectrograms))
-spectrograms_scaled = spectrograms_scaled / spectrograms_scaled.max()
-
-images = [Image.fromarray((np.uint8(cm.viridis(spectrograms_scaled[i:i+step,:].T)*255))).resize(size=(img_dim,img_dim)) for i in range(0,spectrograms_scaled.shape[0],step)]
-
-image_width, image_height = images[0].size
-one_square_size = int(np.ceil(np.sqrt(len(images))))
-master_width = (image_width * one_square_size) 
-master_height = image_height * one_square_size
-spriteimage = Image.new(
-    mode='RGBA',
-    size=(master_width, master_height),
-    color=(0,0,0,0))  # fully transparent
-for count, image in enumerate(images):
-    div, mod = divmod(count,one_square_size)
-    h_loc = image_width*div
-    w_loc = image_width*mod    
-    spriteimage.paste(image,(w_loc,h_loc))
-
+spriteimage = create_spritesheet(spectrograms,n_examples=embeddings.shape[0],img_dim=50)
 sprite_file = os.path.join(output_path,f"{audio_name}_sprite.jpg")
 spriteimage.convert("RGB").save(sprite_file, transparency=0)
 # write audio file
