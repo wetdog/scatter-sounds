@@ -3,7 +3,8 @@ import soundfile as sf
 import resampy
 import umap
 from sklearn.manifold import TSNE
-
+from PIL import Image
+from matplotlib import cm
 
 def load_audio_16khz(audio_file):
     x, sample_rate = sf.read(audio_file)
@@ -20,7 +21,7 @@ def get_random_signal(n_seconds,sample_rate):
     return np.random.rand(sample_rate*n_seconds)
 
 
-def reduce_dim(method="UMAP"):
+def reduce_dim(embeddings,method="UMAP"):
     if method == "TSNE":
         tsne_reducer = TSNE(n_components=3)
         projected_embeddings = tsne_reducer.fit_transform(embeddings)
@@ -30,3 +31,33 @@ def reduce_dim(method="UMAP"):
         umap_reducer = umap.UMAP(n_components=3)
         projected_embeddings = umap_reducer.fit_transform(embeddings)
         return projected_embeddings
+
+def create_spritesheet(spectrogram,n_examples,img_dim=50):
+
+    if type(spectrogram).__name__ != 'ndarray':
+        spectrogram = spectrogram.numpy()
+
+    if len(spectrogram.shape) > 2:
+        spectrogram = np.squeeze(spectrogram,axis=0)
+
+    step = int(np.floor(spectrogram.shape[0] / n_examples))
+    spectrogram = spectrogram[:,::-1]
+    spectrogram_scaled = spectrogram + np.abs(np.min(spectrogram))
+    spectrogram_scaled = spectrogram_scaled / spectrogram_scaled.max()
+
+    images = [Image.fromarray((np.uint8(cm.viridis(spectrogram_scaled[i:i+step,:].T)*255))).resize(size=(img_dim,img_dim)) for i in range(0,spectrogram_scaled.shape[0],step)]
+
+    image_width, image_height = images[0].size
+    one_square_size = int(np.ceil(np.sqrt(len(images))))
+    master_width = (image_width * one_square_size) 
+    master_height = image_height * one_square_size
+    spriteimage = Image.new(
+        mode='RGBA',
+        size=(master_width, master_height),
+        color=(0,0,0,0))  # fully transparent
+    for count, image in enumerate(images):
+        div, mod = divmod(count,one_square_size)
+        h_loc = image_width*div
+        w_loc = image_width*mod    
+        spriteimage.paste(image,(w_loc,h_loc))
+    return spriteimage
