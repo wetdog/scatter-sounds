@@ -32,6 +32,11 @@ def reduce_dim(embeddings,method="UMAP"):
         projected_embeddings = umap_reducer.fit_transform(embeddings)
         return projected_embeddings
 
+
+# vaporwave pallete
+"""vaporwave": ["#94D0FF", "#8795E8", "#966bff", "#AD8CFF", "#C774E8",
+ "#c774a9", "#FF6AD5", "#ff6a8b", "#ff8b8b", "#ffa58b", "#ffde8b", "#cdde8b", "#8bde8b", "#20de8b"],
+"""
 def create_spritesheet(spectrogram,n_examples,img_dim=50):
 
     if type(spectrogram).__name__ != 'ndarray':
@@ -45,7 +50,7 @@ def create_spritesheet(spectrogram,n_examples,img_dim=50):
     spectrogram_scaled = spectrogram + np.abs(np.min(spectrogram))
     spectrogram_scaled = spectrogram_scaled / spectrogram_scaled.max()
 
-    images = [Image.fromarray((np.uint8(cm.viridis(spectrogram_scaled[i:i+step,:].T)*255))).resize(size=(img_dim,img_dim)) for i in range(0,spectrogram_scaled.shape[0],step)]
+    images = [Image.fromarray((np.uint8(cm.plasma(spectrogram_scaled[i:i+step,:].T)*255))).resize(size=(img_dim,img_dim)) for i in range(0,spectrogram_scaled.shape[0],step)]
 
     image_width, image_height = images[0].size
     one_square_size = int(np.ceil(np.sqrt(len(images))))
