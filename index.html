@@ -1,33 +1,151 @@
 <!DOCTYPE html>
 <head>
-    <title>Scatter Demo</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>Scatter Sounds</title>
     <style>
     body {
+        background-color:	#b967ff;
         font-family: Arial, Helvetica, sans-serif;
         margin: 0;
       }
       #header {
+        background-color:	#b967ff;
         width: 100vw;
         height: 10vh;
       }
 
       #container {
+        left:10vw;
         width: 100vw;
         height: 90vh;
+      }
+      #sidecontrols {
+        background-color: #ff71ce;
+        position: fixed;
+        top: 10vh;
+        left: 0;
+        width: 15vw;
+        padding-left: 10px;
       }
     </style>
 </head>
 
-
 <body>
     <div id ="header">
-      <h1 align=center>Sound clips</h1>
+      <h3 align=center>Sound Clips</h3>
       <p align=center id='msg'></p>
   </div>
     <div id="container"></div>
+    
+    <div id="sidecontrols">
+      <div class="interactions control">
+        <h5>Controls</h5>
+        <label class="mdl-radio mdl-js-radio" for="pan-interaction">
+          <input
+            type="radio"
+            class="mdl-radio__button"
+            id="pan-interaction"
+            name="interactions"
+            value="pan"
+            checked
+          />
+          <span class="mdl-radio__label">Pan</span>
+        </label>
+        <label class="mdl-radio mdl-js-radio" for="select-interaction">
+          <input
+            type="radio"
+            class="mdl-radio__button"
+            id="select-interaction"
+            name="interactions"
+            value="select"
+          />
+          <span class="mdl-radio__label">Select</span>
+        </label>
+      </div>
+      <div class="button control">
+        <button
+          id="select-random"
+          class="mdl-button mdl-js-button mdl-button--raised"
+        >
+          Select random
+        </button>
+      </div>
+      <div class="button control">
+        <button
+          id="toggle-orbit"
+          class="mdl-button mdl-js-button mdl-button--raised"
+        >
+          Toggle Orbit
+        </button>
+      </div>
+      <hr />
+      <div class="render-modes control">
+        <h5>Render</h5>
+        <label class="mdl-radio mdl-js-radio" for="point-render">
+          <input
+            type="radio"
+            class="mdl-radio__button"
+            id="point-render"
+            name="render"
+            value="points"
+            checked
+          />
+          <span class="mdl-radio__label">Points</span>
+        </label>
+        <label class="mdl-radio mdl-js-radio" for="sprite-render">
+          <input
+            type="radio"
+            class="mdl-radio__button"
+            id="sprite-render"
+            name="render"
+            value="sprites"
+          />
+          <span class="mdl-radio__label">Sprites</span>
+        </label>
+        <label class="mdl-radio mdl-js-radio" for="text-render">
+          <input
+            type="radio"
+            class="mdl-radio__button"
+            id="text-render"
+            name="render"
+            value="text"
+          />
+          <span class="mdl-radio__label">Text</span>
+        </label>
+        
+      <div class="color control">
+        <h5>Color by</h5>
+        <label class="mdl-radio mdl-js-radio" for="color-default">
+          <input
+            type="radio"
+            class="mdl-radio__button"
+            id="color-default"
+            name="color"
+            value="default"
+            checked
+          />
+          <span class="mdl-radio__label">Default</span>
+        </label>
+        <label class="mdl-radio mdl-js-radio" for="color-label">
+          <input
+            type="radio"
+            class="mdl-radio__button"
+            id="color-label"
+            name="color"
+            value="label"
+          />
+          <span class="mdl-radio__label">Label</span>
+        </label>
+      </div>
+      <hr />
+      <h5 id="messages"></h5>
+    </div>
     <!-- Load three.js -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.106.2/build/three.min.js"></script>
 <!-- Load scatter-gl.js -->
 <script src="https://cdn.jsdelivr.net/npm/scatter-gl@0.0.1/lib/scatter-gl.min.js"></script>
-<script src="render.js"></script>
+<script src="renderAudio.js"></script>
 </body>
