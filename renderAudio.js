@@ -1,13 +1,38 @@
 
-
 // Load json File projections
-const dataUrl = "./preprocess/projections.json"
-const audioUrl = "long_audio_2.wav";
+const dataUrl = "./data/projections.json"
+const audioUrl = "./data/city_sound.flac";
+
 let dataArray;
 let bufferData = null;
 let bufferDataArray
 
 const containerElement = document.getElementById('container');
+
+// 
+// const metadata  = [];
+// data.projection.forEach((vector, index) => {
+//    const labelIndex = data.labels[index];
+//    dataPoints.push(vector);
+//    metadata.push({
+//      labelIndex,
+//      label: data.labelNames[labelIndex],
+//    });
+//  });
+///
+
+// load Json data
+fetch(dataUrl)
+    .then(function(resp) {
+        return resp.json(); 
+    })
+    .then(function(data){        
+        dataArray = data;
+    })
+    
+// **************** Web audio *****************
+
+const context = new window.AudioContext();
 
 async function loadSoundfetch(audioContext, url){              
     try {
@@ -28,53 +53,76 @@ async function loadSoundfetch(audioContext, url){
     }
     }
 
-function playSounds(buffer,point){
+function playSounds(buffer,point,typeCall){
     console.log(point);
     console.log("Start time:" + point*0.48);
 
-    if(point){
+    if(point){ 
         const now = context.currentTime;
         const source = new AudioBufferSourceNode(context);
         const amp = new GainNode(context);
         source.connect(amp).connect(context.destination);
-        
         source.buffer = buffer;
-        source.start(now,point*0.48);
-        source.stop(now + 1);
+        
+        if (typeCall === "on-hoover"){
+            source.start(now,point*0.48);
+            source.stop(now + 1);
+        }
+        if (typeCall === "on-click"){
+            console.log("loop")
+            source.loop = true
+            source.start(now,point*0.48);
+            source.stop(now + 4);
+        }
     }
 }
 
-// load Json data
-fetch(dataUrl)
-    .then(function(resp) {
-        return resp.json(); 
-    })
-    .then(function(data){        
-        dataArray = data;
-    })
-    
-// **************** Web audio *****************
-const context = new AudioContext();
 loadSoundfetch(context,audioUrl);
 
+
+
 function renderDataset(){
-    const dataset = new ScatterGL.Dataset(dataArray.projections);
-    const scatterGL = new ScatterGL(containerElement,
-            //{
-              //onClick: (point) => playSounds(bufferData,point)
-
-            //},
-            {
-               onHover: (point) => playSounds(bufferData,point)
-            }
-        );
-
+    const dataset = new ScatterGL.Dataset(dataArray.projections,dataArray.idx);
+    dataset.setSpriteMetadata({
+        spriteImage: './data/city_sound_sprite.jpg',
+        singleSpriteSize: [150, 150],
+        // Uncomment the following line to only use the first sprite for every point
+        //spriteIndices: dataArray.projections.map(d => 0),
+      });
+    const scatterGL = new ScatterGL(containerElement,{
+        onClick: (point) => playSounds(bufferData,point,"on-click"),
+        onHover: (point) => playSounds(bufferData,point,"on-hoover"),
+        styles: {
+            backgroundColor: '#fffb96',
+            axesVisible: false,
+            fog: {
+                color: '#ffffff',
+                enabled: false,
+                threshold: 15000,
+              },
+            sprites: {
+                minPointSize: 5.0,
+                imageSize: 150,
+                colorUnselected: '#ffffff',
+                colorNoSelection: '#ffffff',
+                    },
+            }   
+  
+    });
+    
     scatterGL.render(dataset);
+    scatterGL.setSpriteRenderMode();
+    
     }
 
 setTimeout(renderDataset,3000)
+
+
 // Add in a resize observer for automatic window resize.
 window.addEventListener('resize', () => {
     scatterGL.resize();
   });
 
+window.addEventListener('load', (event) => {
+    console.log('page is fully loaded');
+  });
