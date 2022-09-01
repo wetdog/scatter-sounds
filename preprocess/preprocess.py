@@ -17,6 +17,7 @@ if args.file:
     audio_file = args.file
 else:
     audio_file = "../city_sound.wav"
+    # https://freesound.org/people/soundsofeurope/sounds/170862/
 
 assert os.path.isfile(audio_file), "Invalid audio path"
 
@@ -55,15 +56,17 @@ ids = [i for i in range(n_windows)]
 json_dict = {"idx":ids,
             "start_sample": start_samples,
             "end_sample":end_samples,
-            "projections":projected_embeddings.tolist()}
+            "projections":norm_projected_embeddings.tolist()}
 
+# write json file
 with open(os.path.join(output_path,"projections.json"),"w") as json_file:
     json.dump(json_dict,json_file)
 
 ## spritesheet
 # create sprite image
-spriteimage = create_spritesheet(spectrograms,n_examples=embeddings.shape[0],img_dim=50)
+spriteimage = create_spritesheet(spectrograms,n_examples=embeddings.shape[0],img_dim=150)
 sprite_file = os.path.join(output_path,f"{audio_name}_sprite.jpg")
 spriteimage.convert("RGB").save(sprite_file, transparency=0)
+
 # write audio file
 sf.write(file=os.path.join(output_path,f"{audio_name}.flac"),data=x,samplerate=16000)
