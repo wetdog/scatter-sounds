@@ -6,6 +6,8 @@ from sklearn.manifold import TSNE
 from PIL import Image
 from matplotlib import cm
 from matplotlib.colors import ListedColormap
+import os
+from tqdm import tqdm
 
 def load_audio_resample(audio_file,target_sr):
     x, sample_rate = sf.read(audio_file)
@@ -16,6 +18,33 @@ def load_audio_resample(audio_file,target_sr):
     if sample_rate != target_sr:
         x = resampy.resample(x,sample_rate,target_sr)
     return x
+
+def load_clips_from_folder(audio_folder,clip_dur=1,target_sr=16000):
+    audio_files = [os.path.join(audio_folder,f) for f in os.listdir(audio_folder) if f.endswith("wav")]
+    merged_audio = []
+
+    for audio in tqdm(audio_files):
+        x, fs = sf.read(audio)
+        if len(x.shape) > 1:
+            x = x.mean(axis=1)
+        idx_max = np.argmax(x)
+        start = int(idx_max - (clip_dur/2)*fs)
+        end = int(idx_max + (clip_dur/2)*fs)
+        if end > (len(x)):
+            end = len(x)
+            start = int(end - (clip_dur*fs))
+        if start < 0:
+            start = 0
+            end = int(clip_dur*fs)
+        segment = x[start:end]
+        merged_audio.append(segment)
+
+    flat_list = [item for sublist in merged_audio for item in sublist]
+    merged_audio = np.asarray(flat_list)
+    x = merged_audio
+    x = resampy.resample(x,44100,target_sr)
+    return x
+
 
 def get_random_signal(n_seconds,sample_rate):
     return np.random.rand(sample_rate*n_seconds)
