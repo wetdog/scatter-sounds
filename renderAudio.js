@@ -1,14 +1,32 @@
+// Start webpage
 
-// Load json File projections
 const dataUrl = "./data/projections.json"
-const audioUrl = "./data/city_sound.flac";
+const audioUrl = "./data/audio.flac"
+const spriteUrl = "./data/audio_sprite.jpg"
+const hopSize = 0.48; //"Clip Duration"
+const windowSize = 1; // clip duration
+//let dataUrl, audioUrl, spriteUrl;
+const configUrl = "./data/config.json";
+
 
 let dataArray;
 let bufferData = null;
 let bufferDataArray
 
-const containerElement = document.getElementById('container');
+// load config Json
+fetch(configUrl)
+    .then(function(resp) {
+        return resp.json(); 
+    })
+    .then(function(data){        
+        configData = data;
+        let dataUrl2 = configData.projectionsFile;
+        let audioUrl2 = configData.audioFile;
+        let spriteUrl2 = configData.spriteFile;
+        console.log(`Audio ${audioUrl2} data ${dataUrl2} Sprite ${spriteUrl2}`);
+    })
 
+const containerElement = document.getElementById('container');
 // 
 // const metadata  = [];
 // data.projection.forEach((vector, index) => {
@@ -55,23 +73,33 @@ async function loadSoundfetch(audioContext, url){
 
 function playSounds(buffer,point,typeCall){
     console.log(point);
-    console.log("Start time:" + point*0.48);
+    console.log("Start time:" + point*hopSize);
 
     if(point){ 
         const now = context.currentTime;
         const source = new AudioBufferSourceNode(context);
         const amp = new GainNode(context);
-        source.connect(amp).connect(context.destination);
-        source.buffer = buffer;
+        // Create a stereo panner
+        const panNode = context.createStereoPanner();
+
+        document.addEventListener('mousemove', (event) => {
+            let panValue = 2*(event.clientX / screen.width) - 1;
+            panNode.pan.setValueAtTime(panValue, context.currentTime)
+        });
         
+        source.connect(amp)
+            .connect(panNode)
+            .connect(context.destination);
+        source.buffer = buffer;
+
         if (typeCall === "on-hoover"){
-            source.start(now,point*0.48);
-            source.stop(now + 1);
+            source.start(now,point*hopSize);
+            source.stop(now + windowSize);
         }
         if (typeCall === "on-click"){
             console.log("loop")
             source.loop = true
-            source.start(now,point*0.48);
+            source.start(now,point*hopSize);
             source.stop(now + 4);
         }
     }
@@ -80,11 +108,10 @@ function playSounds(buffer,point,typeCall){
 loadSoundfetch(context,audioUrl);
 
 
-
 function renderDataset(){
-    const dataset = new ScatterGL.Dataset(dataArray.projections,dataArray.idx);
+    const dataset = new ScatterGL.Dataset(dataArray.spherical,dataArray.idx);
     dataset.setSpriteMetadata({
-        spriteImage: './data/city_sound_sprite.jpg',
+        spriteImage: spriteUrl,
         singleSpriteSize: [150, 150],
         // Uncomment the following line to only use the first sprite for every point
         //spriteIndices: dataArray.projections.map(d => 0),
@@ -94,7 +121,7 @@ function renderDataset(){
         onHover: (point) => playSounds(bufferData,point,"on-hoover"),
         styles: {
             backgroundColor: '#fffb96',
-            axesVisible: false,
+            axesVisible: true,
             fog: {
                 color: '#ffffff',
                 enabled: false,
