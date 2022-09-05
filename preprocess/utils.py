@@ -9,6 +9,8 @@ from matplotlib.colors import ListedColormap
 import os
 from tqdm import tqdm
 
+
+
 def load_audio_resample(audio_file,target_sr):
     x, sample_rate = sf.read(audio_file)
     # check for mono file
@@ -57,7 +59,9 @@ def reduce_dim(embeddings,method="UMAP"):
         return projected_embeddings
 
     elif method =="UMAP":
-        umap_reducer = umap.UMAP(n_components=3)
+        umap_reducer = umap.UMAP(n_components=3,
+                                n_neighbors=15,
+                                metric="minkowski")
         projected_embeddings = umap_reducer.fit_transform(embeddings)
         return projected_embeddings
 
