@@ -41,7 +41,7 @@ const containerElement = document.getElementById('container');
     
 // **************** Web audio *****************
 
-const context = new window.AudioContext();
+const context = new (window.AudioContext || window.webkitAudioContext)();
 
 async function loadSoundfetch(audioContext, url){              
     try {
@@ -147,8 +147,6 @@ fetch(dataUrl)
     })
     .then((dataArray)=>{console.log("data loaded");
                 return scatterGL = renderDataset(dataArray)})
-
-//setTimeout(renderDataset,3000);
 
 // Add in a resize observer for automatic window resize.
 window.addEventListener('resize', () => {
