@@ -3,3 +3,5 @@
 preprocess/*.json
 .DS_Store
 *.jpg
+*__pycache__
+
