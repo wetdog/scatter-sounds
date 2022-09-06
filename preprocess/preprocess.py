@@ -30,8 +30,6 @@ if args.dir:
     audio_name = os.path.basename(audio_folder)
     x = load_clips_from_folder(audio_folder,clip_dur=1,target_sr=16000)
 
-
-
 # Load models from TF-hub
 yamnet = hub.load('https://tfhub.dev/google/yamnet/1')
 
@@ -63,12 +61,14 @@ print(f"Embedding duration: {duration / embeddings.shape[0]}")
 
 # dimensionality reduction 
 projected_embeddings = reduce_dim(embeddings, method="UMAP")
-norm_projected_embeddings = projected_embeddings / projected_embeddings.max()
+norm_projected_embeddings = np.divide(projected_embeddings, projected_embeddings.max(axis=1).reshape(-1,1))
 print(f"Projected embeddings shape {projected_embeddings.shape}")
 
-embedding_magnitude = np.sqrt(np.sum(np.power(norm_projected_embeddings,2)))
-sphere_radius = 2
-spherical = (sphere_radius/embedding_magnitude)*norm_projected_embeddings
+# spherical projection
+embedding_magnitude = np.sqrt(np.sum(np.power(norm_projected_embeddings,2),axis=1))
+sphere_radius = 10
+Q = sphere_radius/embedding_magnitude
+spherical = np.multiply( Q.reshape(-1,1),norm_projected_embeddings)
 
 start_seconds = [int(i*hop_size) for i in range(n_windows)]
 end_seconds = [int((i*hop_size + window_size)) for i in range(n_windows)]
@@ -77,7 +77,7 @@ ids = [i for i in range(n_windows)]
 json_dict = {"idx":ids,
             "start_seconds": start_seconds,
             "end_seconds":end_seconds,
-            "projections":norm_projected_embeddings.tolist(),
+            "projections":projected_embeddings.tolist(),
             "spherical":spherical.tolist()}
 
 # write json file
