@@ -67,10 +67,10 @@
       </div>
       <div class="button control">
         <button
-          id="select-random"
+          id="reset-zoom"
           class="mdl-button mdl-js-button mdl-button--raised"
         >
-          Select random
+          Reset zoom
         </button>
       </div>
       <div class="button control">
@@ -140,6 +140,32 @@
           <span class="mdl-radio__label">Label</span>
         </label>
       </div>
+
+      <div class="color control">
+        <h5>Projections</h5>
+        <label class="mdl-radio mdl-js-radio" for="spherical-projections">
+          <input
+            type="radio"
+            class="mdl-radio__button"
+            id="spherical-projections"
+            name="projection"
+            value="cartesian"
+            checked
+          />
+          <span class="mdl-radio__label">Cartesian</span>
+        </label>
+        <label class="mdl-radio mdl-js-radio" for="spherical-projections">
+          <input
+            type="radio"
+            class="mdl-radio__button"
+            id="spherical-projections"
+            name="projection"
+            value="spherical"
+          />
+          <span class="mdl-radio__label">Spherical</span>
+        </label>
+      </div>
+      
       <hr />
       <h5 id="messages"></h5>
     </div>
