@@ -10,7 +10,8 @@ const nLoops = 4;
 const configUrl = "./data/config.json";
 
 let bufferData = null;
-let bufferDataArray
+let bufferDataArray;
+let dataProj;
 
 // load config Json
 fetch(configUrl)
@@ -59,6 +60,28 @@ async function loadSoundfetch(audioContext, url){
         console.log(`Error: ${error}`);
     }
     };
+
+function projectSpherical(array,sphereRadius=2){
+    let Q;
+    let magnitude;
+    let projections = [];
+
+    for (let n = 0; n < array.length; n++){
+        Q = 0;
+        magnitude = 0;
+        for (let dim =0; dim < array[n].length; dim ++){
+            magnitude += array[n][dim]**2;
+        }
+        Q = sphereRadius/magnitude**(0.5);
+        let tempPoint = [];
+        for (let dim =0; dim < array[n].length; dim ++){
+            tempPoint.push(array[n][dim] * Q);
+        }
+        projections.push(tempPoint);
+
+    }
+    return projections;
+}
 
 function playSounds(buffer,point,typeCall){
     if(point){ 
@@ -123,7 +146,7 @@ function renderDataset(dataArray){
               },
             sprites: {
                 minPointSize: 8.0,
-                imageSize: 200,
+                imageSize: 100,
                 colorUnselected: '#ffffff',
                 colorNoSelection: '#ffffff',
                     },
@@ -146,7 +169,8 @@ fetch(dataUrl)
         return data;
     })
     .then((dataArray)=>{console.log("data loaded");
-                return scatterGL = renderDataset(dataArray)})
+                dataProj = dataArray;
+                return scatterGL = renderDataset(dataArray);})
 
 // Add in a resize observer for automatic window resize.
 window.addEventListener('resize', () => {
@@ -187,12 +211,50 @@ document
     });
   });
 
+  // projection
+document
+.querySelectorAll('input[name="projection"]')
+.forEach(inputElement => {
+  inputElement.addEventListener('change', () => {
+    renderMode = inputElement.value;
+    if (inputElement.value === 'cartesian') {
+
+        console.log("cartesian");
+        const dataset = new ScatterGL.Dataset(dataProj.projections,dataProj.idx);
+        dataset.setSpriteMetadata({
+        spriteImage: spriteUrl,
+        singleSpriteSize: [150, 150],
+        });
+        scatterGL.updateDataset(dataset);
+        scatterGL.startOrbitAnimation();
+
+    } else if (inputElement.value === 'spherical') {
+        console.log("spherical");
+        const sphDataset = new ScatterGL.Dataset(dataProj.spherical,dataProj.idx);
+        sphDataset.setSpriteMetadata({
+        spriteImage: spriteUrl,
+        singleSpriteSize: [150, 150],
+        });
+        scatterGL.updateDataset(sphDataset);
+        scatterGL.startOrbitAnimation();
+    } 
+  });
+});
+
 // toogle Orbit 
 const toggleOrbitButton = document.getElementById('toggle-orbit');
 toggleOrbitButton.addEventListener('click', () => {
-  if (scatterGL.isOrbiting()) { 
+  if (scatterGL.isOrbiting) { 
     scatterGL.stopOrbitAnimation();
   } else {
     scatterGL.startOrbitAnimation();
   }
+});
+
+// reset zoom 
+// toogle Orbit 
+const resetZoomButton = document.getElementById('reset-zoom');
+resetZoomButton.addEventListener('click', () => {
+    console.log("reset zoom")
+    scatterGL.resetZoom;
 });
