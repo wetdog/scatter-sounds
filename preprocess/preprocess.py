@@ -32,6 +32,7 @@ if args.dir:
 
 # Load models from TF-hub
 yamnet = hub.load('https://tfhub.dev/google/yamnet/1')
+vggish = hub.load('https://tfhub.dev/google/vggish/1')
 
 
 sprite_img_dim = 150
