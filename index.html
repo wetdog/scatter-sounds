@@ -67,19 +67,16 @@
       </div>
       <div class="button control">
         <button
-          id="reset-zoom"
-          class="mdl-button mdl-js-button mdl-button--raised"
-        >
-          Reset zoom
-        </button>
-      </div>
-      <div class="button control">
-        <button
           id="toggle-orbit"
           class="mdl-button mdl-js-button mdl-button--raised"
         >
-          Toggle Orbit
+          Orbit
         </button>
+        <select name="datasets" id="dataset-selector">
+          <option value="audio">ESC-50</option>
+          <option value="city_sound">long_audio</option>
+          <option value="all_clips_ubk">UB8k</option>
+        </select>
       </div>
       <hr />
       <div class="render-modes control">
@@ -91,7 +88,7 @@
             id="point-render"
             name="render"
             value="points"
-            checked
+            
           />
           <span class="mdl-radio__label">Points</span>
         </label>
@@ -102,6 +99,7 @@
             id="sprite-render"
             name="render"
             value="sprites"
+            checked
           />
           <span class="mdl-radio__label">Sprites</span>
         </label>
