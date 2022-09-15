@@ -239,8 +239,6 @@ document
         scatterGL.setPointRenderMode();
       } else if (inputElement.value === 'sprites') {
         scatterGL.setSpriteRenderMode();
-      } else if (inputElement.value === 'text') {
-        scatterGL.setTextRenderMode();
       }
     });
   });
