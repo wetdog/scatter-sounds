@@ -1,13 +1,10 @@
-let prjName = "fold8";
-//const dataUrl = `./data/${prjName}_projections.json`
-//const audioUrl = `./data/${prjName}.flac`
-//const spriteUrl = `./data/${prjName}_sprite.jpg`
+let prjName = "fold2";
 let configUrl = `./data/${prjName}_config.json`;
-const nLoops = 4;
 let dataUrl, audioUrl, spriteUrl
 let hopSize = 0.96; //"all embeddings 0.48,on clip project change to 0.96
 let windowSize = 0.96; // clip duration
 let nLabels = 10; // for color mapping
+const nLoops = 4;
 
 let bufferData = null;
 let dataProj;

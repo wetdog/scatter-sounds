@@ -11,6 +11,9 @@ from tqdm import tqdm
 import librosa
 
 
+ub8k_labels = ["air_conditioner","car_horn","children_playing","dog_bark","drilling",
+                    "engine_idling","gun_shot","jackhammer","siren","street_music"]
+
 def load_audio_resample(audio_file: str, target_sr:int=16000):
     """Load wav file and resample to a target frequency
         returns mono resampled signal"""
@@ -76,8 +79,6 @@ def process_clips_from_folder(audio_folder: str,clip_dur: float=0.96,global_sr:f
         "s_bandwidth": [],
         "labelnames":[]
     }
-    ub8k_labels = ["air_conditioner","car_horn","children_playing","dog_bark","drilling",
-                    "engine_idling","gun_shot","jackhammer","siren","street_music"]
 
     for audio in tqdm(audio_files):
         x, fs = sf.read(audio)
