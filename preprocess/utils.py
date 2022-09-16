@@ -14,6 +14,14 @@ import librosa
 ub8k_labels = ["air_conditioner","car_horn","children_playing","dog_bark","drilling",
                     "engine_idling","gun_shot","jackhammer","siren","street_music"]
 
+esc50_labels = ["dog","rooster","pig","cow","frog","cat","hen","insects","sheep","crow",
+"rain","sea_waves","crackling_fire","crickets","chirping_birds","water_drops","wind",
+"pouring_water","toilet_flush","thunderstorm","crying_baby","sneezing","clapping",
+"breathing","coughing","footsteps","laughing","brushing_teeth","snoring","drinking_sipping",
+"door_wood_knock","mouse_click","keyboard_typing","door_wood_creaks","can_opening","washing_machine",
+"vacuum_cleaner","clock_alarm","clock_tick","glass_breaking","helicopter","chainsaw","siren",
+"car_horn","engine","train","church_bells","airplane","fireworks","hand_saw"]
+
 def load_audio_resample(audio_file: str, target_sr:int=16000):
     """Load wav file and resample to a target frequency
         returns mono resampled signal"""
@@ -28,7 +36,7 @@ def load_audio_resample(audio_file: str, target_sr:int=16000):
     return x
 
 
-def get_metadata(x, hop_size:float=0.48, window_size:float=0.96,sr:int=16000):
+def get_metadata(x, hop_size:float=0.48, window_size:float=0.96,sr:int=16000)->dict:
     """Get predefined audio descriptors from a signal
         returns dictionary as metadata
     """
@@ -57,15 +65,16 @@ def get_metadata(x, hop_size:float=0.48, window_size:float=0.96,sr:int=16000):
     
     return metadata_dict
 
-def get_label_ub8k(filename):
+def get_label_ub8k(filename)->str:
     """get label from ub8k dataset"""
     return filename.split(".")[0].split("-")[1]
 
-def get_label_esc50(filename):
+def get_label_esc50(filename)->str:
     """get label from esc-50 dataset"""
     return filename.split(".")[0].split("-")[1]
 
-def process_clips_from_folder(audio_folder: str,clip_dur: float=0.96,global_sr:float=44100,target_sr: int=16000):
+def process_clips_from_folder(audio_folder: str,parse_label_fn:function,labels_str:list,
+    clip_dur: float=0.96,global_sr:float=44100,target_sr: int=16000)->np.ndarray:
     """ Process audio clips inside a folder to extract equal size fragments,
         and build a metadata dictionary with audio descriptors, labels and filenames """
 
@@ -96,10 +105,10 @@ def process_clips_from_folder(audio_folder: str,clip_dur: float=0.96,global_sr:f
 
         # metadata
         filename = os.path.basename(audio)
-        label = get_label_ub8k(filename)
+        label = parse_label_fn(filename)
         metadata_dict["filenames"].append(filename)
         metadata_dict["labels"].append(label)
-        metadata_dict["labelnames"].append(ub8k_labels[int(label)])
+        metadata_dict["labelnames"].append(labels_str[int(label)])
         metadata_dict["s_centroid"].append(np.round(np.mean(spectral_centroid),2))
         metadata_dict["s_rolloff"].append(np.round(np.mean(spectral_rolloff),2))
         metadata_dict["s_bandwidth"].append(np.round(np.mean(spectral_bandwidth),2))
@@ -111,7 +120,7 @@ def process_clips_from_folder(audio_folder: str,clip_dur: float=0.96,global_sr:f
     return merged_audio,metadata_dict
 
 
-def get_clip_selection(x,fs,clip_dur:float=0.96):
+def get_clip_selection(x:np.ndarray,fs:int,clip_dur:float=0.96)->np.ndarray:
     """ Select a region of a defined duration in seconds around the signal maximum"""
     clip_dur_samples = int(clip_dur*fs)
     if len(x) < clip_dur_samples:

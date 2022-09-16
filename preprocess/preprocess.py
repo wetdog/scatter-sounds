@@ -24,12 +24,13 @@ else:
     audio_file = "../city_sound.wav"
     # https://freesound.org/people/soundsofeurope/sounds/170862/
 if args.dir:
-
     audio_folder = args.dir
+    model_sample_rate = 16000
+    global_sr = 44100
     assert os.path.isdir(audio_folder), "Invalid audio folder"
     audio_name = os.path.basename(audio_folder)
-    x, metadata = process_clips_from_folder(audio_folder,clip_dur=0.96,global_sr=44100,target_sr=16000)
-
+    x, metadata = process_clips_from_folder(audio_folder,get_label_ub8k, ub8k_labels,
+                    clip_dur=0.96,global_sr=global_sr,target_sr=model_sample_rate)
 # Load models from TF-hub
 yamnet = hub.load('https://tfhub.dev/google/yamnet/1')
 #vggish = hub.load('https://tfhub.dev/google/vggish/1')
@@ -42,7 +43,6 @@ projections_file = os.path.join(output_path,f"{audio_name}_projections.json")
 config_file = os.path.join(output_path,f"{audio_name}_config.json")
 
 # model parameters
-model_sample_rate = 16000
 hop_size = 0.48
 window_size = 0.96
 chunk_size_seconds = 900
