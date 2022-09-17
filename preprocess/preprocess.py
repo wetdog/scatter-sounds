@@ -6,6 +6,18 @@ import json
 import argparse
 from utils import *
 
+# model parameters
+model_sample_rate = 16000
+hop_size = 0.48
+window_size = 0.96
+# preprocess parameters
+global_sr = 44100 # sample rate of all the audio clips
+sprite_img_dim = 150
+reduce_method = "UMAP"
+# to split very large audios
+chunk_size_seconds = 900
+max_audio_duration = 3600 
+
 parser = argparse.ArgumentParser(description='Preprocess audio files for scatter sound viz')
 parser.add_argument("-f","--file" ,type=str)
 parser.add_argument("-d","--dir",type=str)
@@ -16,39 +28,29 @@ if args.file:
     audio_file = args.file
     assert os.path.isfile(audio_file), "Invalid audio path"
     audio_name = os.path.basename(audio_file).split(".")[0]
-    model_sample_rate = 16000
     x = load_audio_resample(audio_file,target_sr=model_sample_rate)
-    metadata = get_metadata(x,hop_size=0.48,window_size=0.96,sr=model_sample_rate)
-
+    metadata = get_metadata(x,hop_size=hop_size,window_size=window_size,sr=model_sample_rate)
 else:
     audio_file = "../city_sound.wav"
     # https://freesound.org/people/soundsofeurope/sounds/170862/
+
 if args.dir:
     audio_folder = args.dir
-    model_sample_rate = 16000
-    global_sr = 44100
     assert os.path.isdir(audio_folder), "Invalid audio folder"
     audio_name = os.path.basename(audio_folder)
-    x, metadata = process_clips_from_folder(audio_folder,get_label_ub8k, ub8k_labels,
-                    clip_dur=0.96,global_sr=global_sr,target_sr=model_sample_rate)
+    x, metadata = process_clips_from_folder(audio_folder,get_label_esc50, esc50_labels,
+                    clip_dur=window_size,global_sr=global_sr,target_sr=model_sample_rate)
 # Load models from TF-hub
 yamnet = hub.load('https://tfhub.dev/google/yamnet/1')
 #vggish = hub.load('https://tfhub.dev/google/vggish/1')
 
-# output file parameters
-sprite_img_dim = 150
+# output filenames
 sprite_file = os.path.join(output_path,f"{audio_name}_sprite.jpg")
 output_audiofile = os.path.join(output_path,f"{audio_name}.flac")
 projections_file = os.path.join(output_path,f"{audio_name}_projections.json")
 config_file = os.path.join(output_path,f"{audio_name}_config.json")
 
-# model parameters
-hop_size = 0.48
-window_size = 0.96
-chunk_size_seconds = 900
-max_audio_duration = 3600
 duration = x.shape[0] / model_sample_rate
-
 if duration < max_audio_duration:    
     waveform = tf.Variable(x,dtype=tf.float32)
     print(f"Audio shape: {waveform.shape}")
@@ -72,7 +74,6 @@ else:
         waveform = x[sample_start:sample_start+chunk_size_samples]
         waveform = tf.Variable(waveform,dtype=tf.float32)
         print(f"Audio shape: {waveform.shape}")
-        
         # get embedding
         temp_scores, temp_embeddings, temp_spectrograms = yamnet(waveform)
         embeddings_list.append(temp_embeddings)
@@ -85,7 +86,7 @@ else:
 
 print(f"embedding shape: {embeddings.shape}")
 if args.dir:
-    # Get rid of half window embedding for 1 second clips
+    # Get rid of half window embedding for 0.96 second clips
     embeddings = embeddings[::2,:]
     n_windows = int(np.floor(duration/window_size))
 else:
@@ -96,7 +97,7 @@ print(f"embedding shape: {embeddings.shape}")
 print(f"Embedding duration: {duration / embeddings.shape[0]}")
 
 # dimensionality reduction 
-projected_embeddings = reduce_dim(embeddings, method="UMAP")
+projected_embeddings = reduce_dim(embeddings, method=reduce_method)
 norm_projected_embeddings = np.divide(projected_embeddings, projected_embeddings.max(axis=1).reshape(-1,1))
 print(f"Projected embeddings shape {projected_embeddings.shape}")
 
@@ -105,6 +106,10 @@ embedding_magnitude = np.sqrt(np.sum(np.power(projected_embeddings,2),axis=1))
 sphere_radius = 10
 Q = sphere_radius/embedding_magnitude
 spherical = np.multiply( Q.reshape(-1,1),projected_embeddings)
+
+
+#####################################################
+################# OUTPUT FILES ######################
 
 json_dict = {"idx":[i for i in range(n_windows)],
             "metadata":metadata,
@@ -115,7 +120,6 @@ json_dict = {"idx":[i for i in range(n_windows)],
 with open(projections_file, "w") as json_file:
     json.dump(json_dict,json_file)
 
-## spritesheet
 # create sprite image
 spriteimage = create_spritesheet(spectrograms,n_examples=embeddings.shape[0],img_dim=sprite_img_dim)
 spriteimage.convert("RGB").save(sprite_file, transparency=0)

@@ -65,16 +65,19 @@ def get_metadata(x, hop_size:float=0.48, window_size:float=0.96,sr:int=16000)->d
     
     return metadata_dict
 
+
 def get_label_ub8k(filename)->str:
     """get label from ub8k dataset"""
     return filename.split(".")[0].split("-")[1]
 
+
 def get_label_esc50(filename)->str:
     """get label from esc-50 dataset"""
-    return filename.split(".")[0].split("-")[1]
+    return filename.split(".")[0].split("-")[-1]
 
-def process_clips_from_folder(audio_folder: str,parse_label_fn:function,labels_str:list,
-    clip_dur: float=0.96,global_sr:float=44100,target_sr: int=16000)->np.ndarray:
+
+def process_clips_from_folder(audio_folder: str,parse_label_fn:callable,labels_str:list,
+    clip_dur: float=0.96,global_sr:float=44100,target_sr: int=16000)->tuple[np.ndarray,dict]:
     """ Process audio clips inside a folder to extract equal size fragments,
         and build a metadata dictionary with audio descriptors, labels and filenames """
 
@@ -139,7 +142,7 @@ def get_clip_selection(x:np.ndarray,fs:int,clip_dur:float=0.96)->np.ndarray:
     return selection
 
 
-def reduce_dim(embeddings,method: str="UMAP"):
+def reduce_dim(embeddings,method: str="UMAP")->np.ndarray:
     """reduce the Dimensionality of the Yamnet embeddings"""
     if method == "TSNE":
         tsne_reducer = TSNE(n_components=3)
