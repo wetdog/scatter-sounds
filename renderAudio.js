@@ -3,13 +3,12 @@ let configUrl = `./data/${prjName}_config.json`;
 let dataUrl, audioUrl, spriteUrl
 let hopSize = 0.96; //"all embeddings 0.48,on clip project change to 0.96
 let windowSize = 0.96; // clip duration
-let nLabels = 10; // for color mapping
-const nLoops = 4;
-
+//let nLabels = null; // for color mapping
 let bufferData = null;
 let dataProj;
 let configData;
 
+const nLoops = 4;
 const context = new (window.AudioContext || window.webkitAudioContext)();
 const containerElement = document.getElementById('container');
 const messagesElement = document.getElementById('messages');
@@ -47,7 +46,6 @@ fetch(configUrl)
         })
 
 // **************** Web audio *****************
-
 async function loadSoundfetch(audioContext, url){              
     try {
         const response = await fetch(url);
@@ -243,17 +241,6 @@ document
     });
   });
 // color mapping 
-const hues = [...new Array(nLabels)].map((_, i) => Math.floor((370 / nLabels) * i));
-console.log(hues);
-const lightTransparentColorsByLabel = hues.map(
-  hue => `hsla(${hue}, 100%, 50%, 0.05)`
-);
-const heavyTransparentColorsByLabel = hues.map(
-  hue => `hsla(${hue}, 100%, 50%, 0.75)`
-);
-const opaqueColorsByLabel = hues.map(hue => `hsla(${hue}, 100%, ${50 + Math.floor(Math.random()*20)}%, 1)`);
-
-
 document
   .querySelectorAll('input[name="color"]')
   .forEach(inputElement => {
@@ -261,6 +248,17 @@ document
       if (inputElement.value === 'default') {
         scatterGL.setPointColorer(null);
       } else if (inputElement.value === 'label') {
+        let uniqueLabels = [...new Set(dataProj.metadata["labels"])];
+        const nLabels = uniqueLabels.length;
+        const hues = [...new Array(nLabels)].map((_, i) => Math.floor((370 / nLabels) * i));
+        const lightTransparentColorsByLabel = hues.map(
+        hue => `hsla(${hue}, 100%, 50%, 0.05)`
+        );
+        const heavyTransparentColorsByLabel = hues.map(
+        hue => `hsla(${hue}, 100%, 50%, 0.75)`
+        );
+        const opaqueColorsByLabel = hues.map(hue => `hsla(${hue}, 100%, ${50 + Math.floor(Math.random()*20)}%, 1)`);
+
         scatterGL.setPointColorer((i, selectedIndices, hoverIndex) => {
           const labelIndex = dataProj.metadata['labels'][i];
           const opaque = 1;
