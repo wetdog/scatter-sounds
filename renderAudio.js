@@ -59,7 +59,7 @@ async function loadSoundfetch(audioContext, url){
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
         bufferData = audioBuffer;
         // Debug message
-        document.getElementById('msg').textContent = `Audio SDuration: ${audioBuffer.duration}
+        document.getElementById('msg').textContent = `Audio Sprite Duration: ${audioBuffer.duration}
           Vector Length: ${audioBuffer.length} 
           Number of channels: ${audioBuffer.numberOfChannels}`;
         alert("Sound loaded");
