@@ -4,7 +4,7 @@ This a web visualization and listening project based on [scatter-gl](), web-audi
 
 Python preprocessing scripts are provided to handle single long audios, or datasets of sound clips that are stored in a single folder like ESC-50 or urbansound8k. The model used to generate the similarity space is [YAMNet](https://github.com/tensorflow/models/tree/master/research/audioset/yamnet) which is easily aviable throug the [tensorflow-hub](https://tfhub.dev/google/yamnet/1) repository.
 
-###Examples
+### Examples
 
 * [ESC50](https://wetdog.github.io/scatter-sounds/?dataset=audio) 2000 clips of 50 sound categories.
 * [Urbansound8k fold1](https://wetdog.github.io/scatter-sounds/?dataset=fold1) 875 clips of 10 sound categories. 
