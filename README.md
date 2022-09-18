@@ -14,7 +14,7 @@ The wepbage need 4 files to render the sound dataset.
 * **audio.flac:** The "spriteclip" audio with all the dataset clips merged.
 
 ![ESC50 Sprite](./assets/sprite_example.png)
-**ESC50 Sprite example**
+
 ### Data preprocessing
 
 The python preprocessing script would receive as input a path to a folder that contains audio clips, or a path to a long audio file. 
