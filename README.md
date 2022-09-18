@@ -10,11 +10,11 @@ Python preprocessing scripts are provided to handle single long audios, or datas
 * [Urbansound8k fold1](https://wetdog.github.io/scatter-sounds/?dataset=fold1) 875 clips of 10 sound categories. 
 * [Urbansound8k fold2](https://wetdog.github.io/scatter-sounds/?dataset=fold2) 888 clips of 10 sound categories. 
 
-Note: You'll have to wait until the page load the soundfile in order to hear the all the clips.
+Note: You'll have to wait until the page loads the soundfile in order to hear the clips.
 
 ## Usage 
 
-The wepbage need 4 files to render the sound dataset.
+The wepbage needs 4 files to render the sound dataset.
 
 * **config.json:** Store metadata of the dataset and paths to the data files.
 * **projections.json:** Store the 3d projections of the YAMNet embeddings, labels and other useful metadata of the clips. 
