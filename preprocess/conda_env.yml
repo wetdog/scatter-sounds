@@ -1,0 +1,23 @@
+name: tf-metal
+channels:
+  - defaults
+dependencies:
+  - python=3.9
+  - h5py
+  - pillow
+  - pyyaml
+  - flask
+  - tqdm
+  - pip[version='>=19.0']
+  - ipykernel
+  - requests
+  - tensorflow-deps
+  - scikit-learn
+  - matplotlib
+  - boto3
+  - jupyter
+  - pandas
+  - scipy
+  - pandas-datareader
+  - umap-learn
+prefix: /Users/wetdog/opt/miniconda3/envs/tf-metal
