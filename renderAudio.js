@@ -1,4 +1,10 @@
-let prjName = "fold2";
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const datasetStr = urlParams.get("dataset")
+const datasetSelector = document.getElementById("dataset-selector");
+datasetSelector.value = "";
+
+let prjName = datasetStr;
 let configUrl = `./data/${prjName}_config.json`;
 let dataUrl, audioUrl, spriteUrl
 let hopSize = 0.96; //"all embeddings 0.48,on clip project change to 0.96
@@ -53,9 +59,8 @@ async function loadSoundfetch(audioContext, url){
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
         bufferData = audioBuffer;
         // Debug message
-        document.getElementById('msg').textContent = `Duration: ${audioBuffer.duration}
+        document.getElementById('msg').textContent = `Audio SDuration: ${audioBuffer.duration}
           Vector Length: ${audioBuffer.length} 
-          Sample rate: ${audioBuffer.sampleRate} 
           Number of channels: ${audioBuffer.numberOfChannels}`;
         alert("Sound loaded");
     } catch (error) {
@@ -175,7 +180,7 @@ function renderDataset(dataArray){
                             },
         styles: {
             backgroundColor: '#fffb96',
-            axesVisible: false,
+            axesVisible: true,
             fog: {
                 color: '#ffffff',
                 enabled: false,
@@ -187,8 +192,8 @@ function renderDataset(dataArray){
                 colorSelected: 'rgba(2, 255, 161)',
                 colorHover: 'rgba(255, 113, 206)',
                 scaleDefault: 1.0,
-                scaleSelected: 1.4,
-                scaleHover: 1.4,
+                scaleSelected: 1.9,
+                scaleHover: 1.5,
               },
             sprites: {
                 minPointSize: 2.0,
@@ -322,7 +327,15 @@ toggleOrbitButton.addEventListener('click', () => {
   }
 });
 
-const datasetSelector = document.getElementById("dataset-selector");
 datasetSelector.addEventListener('change', () => {
-    console.log(datasetSelector.value);
+    const baseUrl = window.location.href.split("?")[0];
+    if (datasetSelector.value === "esc-50"){
+      location.replace(`${baseUrl}?dataset=audio`)
+    } else if (datasetSelector.value == "ub8k-fold1"){
+      location.replace(`${baseUrl}?dataset=fold1`)
+    } else if (datasetSelector.value == "ub8k-fold2"){
+      location.replace(`${baseUrl}?dataset=fold2`)
+    } else if (datasetSelector.value == "long-audio"){
+    location.replace(`${baseUrl}?dataset=city_sound`)
+    }
     });
