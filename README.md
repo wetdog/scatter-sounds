@@ -4,6 +4,8 @@ This a web visualization and listening project based on [scatter-gl](), web-audi
 
 Python preprocessing scripts are provided to handle single long audios, or datasets of sound clips that are stored in a single folder like ESC-50 or urbansound8k. The model used to generate the similarity space is [YAMNet](https://github.com/tensorflow/models/tree/master/research/audioset/yamnet) which is easily aviable throug the [tensorflow-hub](https://tfhub.dev/google/yamnet/1) repository.
 
+Examples
+
 * [ESC50](https://wetdog.github.io/scatter-sounds/?dataset=audio)
 * [Urbansound8k fold1](https://wetdog.github.io/scatter-sounds/?dataset=fold1)
 * [Urbansound8k fold2](https://wetdog.github.io/scatter-sounds/?dataset=fold2)
@@ -17,9 +19,10 @@ The wepbage need 4 files to render the sound dataset.
 * **sprite.jpg:** The spritesheet image of log-melspectrograms that uses the YAMNet model for each clip of the dataset.
 * **audio.flac:** The "spriteclip" audio with all the dataset clips merged.
 
-<div align="center">
-![ESC50 Sprite](./assets/sprite_example.png)
-</div>
+<p align="center" width="100%">
+    <img width="50%" src="./assets/sprite_example.png" alt="ESC50 Sprite">
+</p>
+
 ### Data preprocessing
 
 The python preprocessing script would receive as input a path to a folder that contains audio clips, or a path to a long audio file. 
