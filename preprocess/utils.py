@@ -36,7 +36,7 @@ def load_audio_resample(audio_file: str, target_sr:int=16000):
     return x
 
 
-def get_metadata(x, hop_size:float=0.48, window_size:float=0.96,sr:int=16000)->dict:
+def get_metadata(x,filename:str,hop_size:float=0.48, window_size:float=0.96,sr:int=16000)->dict:
     """Get predefined audio descriptors from a signal
         returns dictionary as metadata
     """
@@ -45,6 +45,7 @@ def get_metadata(x, hop_size:float=0.48, window_size:float=0.96,sr:int=16000)->d
     hop_size_samples = int(hop_size*sr)
     metadata_dict = {
     "labels" : [],
+    "labelnames" : [],
     "filenames": [],
     "s_centroid": [],
     "s_rolloff": [],
@@ -58,7 +59,9 @@ def get_metadata(x, hop_size:float=0.48, window_size:float=0.96,sr:int=16000)->d
         spectral_rolloff =  librosa.feature.spectral_rolloff(y=frame, sr=sr)
         spectral_bandwidth = librosa.feature.spectral_bandwidth(y=frame, sr=sr)  
         start_time = fstart/sr
-        metadata_dict["filenames"].append(f"{start_time:.2f}")
+
+        metadata_dict["filenames"].append(filename)
+        metadata_dict["labelnames"].append(f"{start_time:.2f} sec")
         metadata_dict["s_centroid"].append(np.round(np.mean(spectral_centroid),2))
         metadata_dict["s_rolloff"].append(np.round(np.mean(spectral_rolloff),2))
         metadata_dict["s_bandwidth"].append(np.round(np.mean(spectral_bandwidth),2)) 

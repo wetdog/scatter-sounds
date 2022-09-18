@@ -16,7 +16,9 @@ sprite_img_dim = 150
 reduce_method = "UMAP"
 # to split very large audios
 chunk_size_seconds = 900
-max_audio_duration = 3600 
+max_audio_duration = 3600
+parse_label_fn = get_label_ub8k
+label_list = ub8k_labels 
 
 parser = argparse.ArgumentParser(description='Preprocess audio files for scatter sound viz')
 parser.add_argument("-f","--file" ,type=str)
@@ -29,7 +31,7 @@ if args.file:
     assert os.path.isfile(audio_file), "Invalid audio path"
     audio_name = os.path.basename(audio_file).split(".")[0]
     x = load_audio_resample(audio_file,target_sr=model_sample_rate)
-    metadata = get_metadata(x,hop_size=hop_size,window_size=window_size,sr=model_sample_rate)
+    metadata = get_metadata(x,filename=audio_name,hop_size=hop_size,window_size=window_size,sr=model_sample_rate)
 else:
     audio_file = "../city_sound.wav"
     # https://freesound.org/people/soundsofeurope/sounds/170862/
@@ -38,7 +40,7 @@ if args.dir:
     audio_folder = args.dir
     assert os.path.isdir(audio_folder), "Invalid audio folder"
     audio_name = os.path.basename(audio_folder)
-    x, metadata = process_clips_from_folder(audio_folder,get_label_esc50, esc50_labels,
+    x, metadata = process_clips_from_folder(audio_folder,parse_label_fn,label_list,
                     clip_dur=window_size,global_sr=global_sr,target_sr=model_sample_rate)
 # Load models from TF-hub
 yamnet = hub.load('https://tfhub.dev/google/yamnet/1')
