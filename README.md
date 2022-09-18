@@ -9,9 +9,11 @@ Python preprocessing scripts are provided to handle single long audios, or datas
 The wepbage need 4 files to render the sound dataset.
 
 * **config.json:** Store metadata of the dataset and paths to the data files.
-* **projections.json:** Store the 3d projections of the YAMNet embeddings, labels and other useful metadata of the dataset. 
+* **projections.json:** Store the 3d projections of the YAMNet embeddings, labels and other useful metadata of the clips. 
 * **sprite.jpg:** The spritesheet image of log-melspectrograms that uses the YAMNet model for each clip of the dataset.
 * **audio.flac:** The "spriteclip" audio with all the dataset clips merged.
+
+
 
 ### Data preprocessing
 
@@ -52,7 +54,9 @@ This would try to.
 5. Reduce the dimensionality of the YAMNet emb(1024) to 3 components.
 6. Generate the spritesheet image, the sprite clip, and the projections file. 
 
-The generated files are stored in the data folder of the project, once they are generated the webpage would list the dataset on the select form.
+The generated files are stored in the data folder of the project, once they are generated you can pass as url argument the name of your dataset and it will be rendered. 
+
+
 
 
 
