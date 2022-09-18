@@ -6,9 +6,9 @@ Python preprocessing scripts are provided to handle single long audios, or datas
 
 Examples
 
-* [ESC50](https://wetdog.github.io/scatter-sounds/?dataset=audio)
-* [Urbansound8k fold1](https://wetdog.github.io/scatter-sounds/?dataset=fold1)
-* [Urbansound8k fold2](https://wetdog.github.io/scatter-sounds/?dataset=fold2)
+* [ESC50](https://wetdog.github.io/scatter-sounds/?dataset=audio) 2000 clips of 50 sound categories.
+* [Urbansound8k fold1](https://wetdog.github.io/scatter-sounds/?dataset=fold1) 875 clips of 10 sound categories. 
+* [Urbansound8k fold2](https://wetdog.github.io/scatter-sounds/?dataset=fold2) 888 clips of 10 sound categories. 
 
 ## Usage 
 
@@ -21,6 +21,7 @@ The wepbage need 4 files to render the sound dataset.
 
 <p align="center" width="100%">
     <img width="50%" src="./assets/sprite_example.png" alt="ESC50 Sprite">
+    <h4>ESC50 Spritesheet of 2000 mel-spectrograms
 </p>
 
 ### Data preprocessing
