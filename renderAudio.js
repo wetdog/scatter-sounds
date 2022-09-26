@@ -122,31 +122,6 @@ function playSounds(buffer,point,typeCall){
     }
 };
 
-function play3dSounds(buffer,points){
-    if(points){ 
-        const now = context.currentTime;
-        const source = new AudioBufferSourceNode(context);
-        const amp = new GainNode(context);
-        // Create a stereo panner
-        const pan3dNode = context.createPanner();
-        pan3dNode.
-        document.addEventListener('mousemove', (event) => {
-            let panValue = 2*(event.clientX / screen.width) - 1;
-            panNode.pan.setValueAtTime(panValue, context.currentTime)
-        });
-        
-        source.connect(amp)
-            .connect(pan3dNode)
-            .connect(context.destination);
-        source.buffer = buffer;
-        source.loop = true;
-        source.loopStart = point*hopSize;
-        source.loopEnd =  point*hopSize + windowSize;
-        source.start(now,point*hopSize);
-        source.stop(now + windowSize*nLoops);
-        }
-    }
-
 function renderDataset(dataArray){
     const dataset = new ScatterGL.Dataset(dataArray.projections,dataArray.metadata);
     dataset.setSpriteMetadata({

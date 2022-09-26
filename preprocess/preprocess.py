@@ -17,7 +17,7 @@ reduce_method = "UMAP"
 # to split very large audios
 chunk_size_seconds = 900
 max_audio_duration = 3600
-parse_label_fn = get_label_ub8k
+parse_label_fn = get_label_generic
 label_list = ub8k_labels 
 
 parser = argparse.ArgumentParser(description='Preprocess audio files for scatter sound viz')
@@ -40,7 +40,7 @@ if args.dir:
     audio_folder = args.dir
     assert os.path.isdir(audio_folder), "Invalid audio folder"
     audio_name = os.path.basename(audio_folder)
-    x, metadata = process_clips_from_folder(audio_folder,parse_label_fn,label_list,
+    x, metadata = process_clips_from_folder(audio_folder,parse_label_fn,
                     clip_dur=window_size,global_sr=global_sr,target_sr=model_sample_rate)
 # Load models from TF-hub
 yamnet = hub.load('https://tfhub.dev/google/yamnet/1')
