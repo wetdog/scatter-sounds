@@ -10,6 +10,12 @@ Python preprocessing scripts are provided to handle single long audios, or datas
 * [Urbansound8k fold1](https://wetdog.github.io/scatter-sounds/?dataset=fold1) 875 clips of 10 sound categories. 
 * [Urbansound8k fold2](https://wetdog.github.io/scatter-sounds/?dataset=fold2) 888 clips of 10 sound categories. 
 
+### Interactions
+
+* When you hoover over a point or spectrogram image, you'll hear the clip and the metadata will appear on the left side of the screen.
+* When you click the point you'll hear the clip on loop 4 times.
+* Selection will play a random clip from the selected ones.  
+
 Note: You'll have to wait until the page loads the soundfile in order to hear the clips.
 
 ## Usage 
@@ -29,6 +35,7 @@ The wepbage needs 4 files to render the sound dataset.
 ### Data preprocessing
 
 The python preprocessing script would receive as input a path to a folder that contains audio clips, or a path to a long audio file. 
+
 
 #### Dataset case
 Audio clips on a folder(E.g. Esc50, UB8k)
@@ -66,6 +73,8 @@ This would try to.
 6. Generate the spritesheet image, the sprite clip, and the projections file. 
 
 The generated files are stored in the data folder of the project, once they are generated you can pass as url argument the name of your dataset and it will be rendered. 
+
+Note: Remember that the space that is rendered in the page is a projection into 3 components that uses either UMAP(default) or T-SNE with it's advantages and caveats. Please read [Understanding UMAP](https://pair-code.github.io/understanding-umap/) and [How to Use t-SNE Effectively](https://distill.pub/2016/misread-tsne/)
 
 
 
