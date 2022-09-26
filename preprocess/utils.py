@@ -69,6 +69,10 @@ def get_metadata(x,filename:str,hop_size:float=0.48, window_size:float=0.96,sr:i
     return metadata_dict
 
 
+def get_label_generic(filename)->str:
+    """get labels as filenames, as unlabeled datasets"""
+    return filename.split(".")[0]
+
 def get_label_ub8k(filename)->str:
     """get label from ub8k dataset"""
     return filename.split(".")[0].split("-")[1]
@@ -79,7 +83,7 @@ def get_label_esc50(filename)->str:
     return filename.split(".")[0].split("-")[-1]
 
 
-def process_clips_from_folder(audio_folder: str,parse_label_fn:callable,labels_str:list,
+def process_clips_from_folder(audio_folder: str,parse_label_fn:callable,labels_str:list=None,
     clip_dur: float=0.96,global_sr:float=44100,target_sr: int=16000)->tuple[np.ndarray,dict]:
     """ Process audio clips inside a folder to extract equal size fragments,
         and build a metadata dictionary with audio descriptors, labels and filenames """
@@ -114,7 +118,11 @@ def process_clips_from_folder(audio_folder: str,parse_label_fn:callable,labels_s
         label = parse_label_fn(filename)
         metadata_dict["filenames"].append(filename)
         metadata_dict["labels"].append(label)
-        metadata_dict["labelnames"].append(labels_str[int(label)])
+        if  labels_str:
+            metadata_dict["labelnames"].append(labels_str[int(label)])
+        else:
+            metadata_dict["labelnames"].append(filename)
+
         metadata_dict["s_centroid"].append(np.round(np.mean(spectral_centroid),2))
         metadata_dict["s_rolloff"].append(np.round(np.mean(spectral_rolloff),2))
         metadata_dict["s_bandwidth"].append(np.round(np.mean(spectral_bandwidth),2))
