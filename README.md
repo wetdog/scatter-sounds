@@ -77,6 +77,7 @@ The generated files are stored in the data folder of the project, once they are 
 Note: Remember that the space that is rendered in the page is a projection into 3 components that uses either UMAP(default) or T-SNE with it's advantages and caveats. Please read [Understanding UMAP](https://pair-code.github.io/understanding-umap/) and [How to Use t-SNE Effectively](https://distill.pub/2016/misread-tsne/)
 
 
+## Acknowledgements
 
-
+This project relies on the work done in the GSOC 2021 with [Orcasound](https://www.orcasound.net/) about exploring sound datasets on embedding spaces, big thanks to my mentors. Also, if you're a Spanish speaker I'm going to recommend this [course](https://dl4genaudio.github.io/) that developed Irán Roman, who introduced me and continues to teach me about this exciting field of sounds and ML.   
 
